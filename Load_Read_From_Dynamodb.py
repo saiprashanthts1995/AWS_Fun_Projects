@@ -1,4 +1,4 @@
-__Author__ = "Sai Prashanth Thalanayar Swainathan"
+__Author__ = "Sai Prashanth Thalanayar Swaminathan"
 __Email__ = "saiprashanthts@gmail.com"
 __Version__ = "0.0.1"
 __Doc__ = "Purpose of this module is to load data into Dynamo DB Table using Boto3"
