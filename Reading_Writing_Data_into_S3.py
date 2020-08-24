@@ -24,6 +24,12 @@ class S3Load:
         self.client = boto3.client('s3')
 
     def read_data(self, file_name='Values.txt'):
+        """
+        Read file from S3, and then apply transformation to decode it as utf-2 and then use csv.reader module to convert
+        data into list and and then subsequently convert it ito pandas dataframe using pandas DataFrame Utility
+        :param file_name:
+        :return:
+        """
         data_list = []
         response = self.client.get_object(
             Bucket = self.bucket_name,
@@ -37,8 +43,19 @@ class S3Load:
         df = pd.DataFrame(data=data_list, columns= header)
         return df
 
-    def write_data(self, src_file_name='', target_file_name=''):
-        self.client.put_object
+    def write_data(self, src_file_name='Iris.csv', target_file_name='iris.csv'):
+        """
+        Write the dataframe content into S3 as an file
+        :param src_file_name:
+        :param target_file_name:
+        :return:
+        """
+        df = pd.read_csv(src_file_name)
+        print(df.head())
+        csv_buffer = StringIO()
+        df.to_csv(csv_buffer, header=True, index=False)
+        response = self.client.put_object(Bucket=self.bucket_name, Body = csv_buffer.getvalue(), Key = target_file_name)
+        return(response)
 
     def list_files(self):
         """
@@ -52,6 +69,11 @@ class S3Load:
 
 
     def delete_file(self, file_name='OnlineRetail.csv'):
+        """
+        Delete the file based on Key
+        :param file_name:
+        :return:
+        """
         response = self.client.delete_object(
             Bucket =self.bucket_name,
             Key = file_name
@@ -66,11 +88,14 @@ def main(bucket_name, choice):
         print(files)
     elif choice == "DELETE":
         load_obj.delete_file()
+        print("File Deleted Successfully")
     elif choice == "READ":
         df = load_obj.read_data()
         print(df.head(20))
+        print("File read Successfully")
     elif choice == "WRITE":
         load_obj.write_data()
+        print('Write Completed')
     else:
         print("Invalid Choice")
 
